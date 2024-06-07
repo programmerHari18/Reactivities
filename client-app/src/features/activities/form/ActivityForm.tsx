@@ -52,7 +52,7 @@ export default observer(function ActivityForm(){
                 <Form.Input placeholder='City' value={activity.city} name='city'/>
                 <Form.Input placeholder='Venue' value={activity.venue} name='venue'/>
                 <Button loading={loading} floated="right" positive type="submit" content="Submit" />
-                <Button as={Link} to={`/activities`}floated="right" type="button" content='Cancel' />
+                <Button as={Link} to={`/activities/${activity.id}`}floated="right" type="button" content='Cancel' />
             </Form>
         </Segment>
     )
