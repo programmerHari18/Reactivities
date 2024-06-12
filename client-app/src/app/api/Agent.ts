@@ -19,11 +19,9 @@ axios.interceptors.response.use(async response => {
     const {data, status, config} = error.response as AxiosResponse;
     switch (status) {
         case 400:
+            toast.error('bad-request');
             if (config.method == 'get' && Object.prototype.hasOwnProperty.call(data.errors, 'id')){
                 router.navigate('/not-found');
-            }
-            if (config.method == 'get') {
-                toast.error('bad-request');
             }
             if(data.errors){
                 const modalStateErrors = [];
