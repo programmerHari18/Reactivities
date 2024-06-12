@@ -8,11 +8,14 @@ interface Props{
 }
 export default function ActivityListItem({activity} : Props) {
 
+
+
     return (
       <Segment.Group>
         <Segment>
             <Item.Group>
                 <Item>
+                    <Item.Image size = 'tiny' circular sec='/assets/placeholder/png' />
                     <Item.Content>
                         <Item.Header as={Link} to={`/activity/${activity.id}`}>
                             {activity.title}
@@ -21,6 +24,7 @@ export default function ActivityListItem({activity} : Props) {
                             Housted By Hari
                         </Item.Description>
                     </Item.Content>
+                    
                 </Item>
             </Item.Group>
         </Segment>
