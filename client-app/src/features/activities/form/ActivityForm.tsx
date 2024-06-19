@@ -1,59 +1,93 @@
-import { Button, Form, Segment } from "semantic-ui-react";
-import { ChangeEvent, useEffect, useState } from "react";
+import { Button, Header, Segment } from "semantic-ui-react";
+import { useEffect, useState } from "react";
 import { useStore } from "../../../app/stores/store";
 import { observer } from "mobx-react-lite";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import LoadingComponent from "../../../app/layout/LoadingComponent";
-import {v4 as uuid} from 'uuid';
+import { Formik, Form } from "formik";
+import * as Yup from 'yup';
+import MyTextInput from "../../../app/common/form/MyTextInput";
+import MyTextArea from "../../../app/common/form/MyTextArea";
+import MySelectInput from "../../../app/common/form/MySelectInput";
+import { categoryOptions } from "../../../app/common/options/CategoryOptions";
+import MyDateInput from "../../../app/common/form/MyDateInput";
+import { Activity } from "../../../app/models/Activity";
+import {v4 as uuid} from 'uuid'; 
 
-
-export default observer(function ActivityForm(){
-    const {activityStore} = useStore();
-    const {loading,createActivity,updateActivity,
-        loadActivity,loadingInitial} = activityStore;
-    const {id} = useParams();
+export default observer(function ActivityForm() {
     const navigate = useNavigate();
+    const { activityStore } = useStore();
+    const { loading, loadActivity, loadingInitial,createActivity,updateActivity } = activityStore;
+    const { id } = useParams();
 
-    const [activity, setActivity] = useState({
+    // Initial state for the activity form
+    const [activity, setActivity] = useState<Activity>({
         id: "",
         title: "",
         category: "",
         description: "",
-        date:"",
-        city:"",
-        venue:""
+        date: null,
+        city: "",
+        venue: ""
     });
 
-    useEffect(() => {
-        if(id) loadActivity(id).then(activity => setActivity(activity!))
-    },[loadActivity,setActivity,id])
+    // Yup validation schema
+    const validationSchema = Yup.object({
+        title: Yup.string().required('The activity title is required'),
+        description: Yup.string().required('The activity description is required'),
+        category: Yup.string().required(),
+        date: Yup.string().required('Date is required'),
+        venue: Yup.string().required(),
+        city: Yup.string().required(),
 
-    function handleSubmit(){
-        if(activity.id){
-            updateActivity(activity).then(() => navigate(`/activities/${activity.id}`));
-        }else{
-            activity.id = uuid();
-            createActivity(activity).then(() => navigate(`/activities/${activity.id}`));
+    });
+    function handleFormSubmit(activity: Activity){
+        if(activity.id.length === 0){
+            const newActivity = {
+                ...activity,
+                id: uuid()
+            };
+            createActivity(newActivity).then(() => navigate(`/activities/${newActivity.id}`))
+        } else{
+            updateActivity(activity).then(() => navigate(`/activities/${activity.id}`))
         }
     }
 
-    function handleImputChange(event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>){
-        const {name, value} = event.target;
-        setActivity({...activity, [name]: value})
-    }
-    if(loadingInitial) return <LoadingComponent content="Loading Activities ..." />
-    return(
+    // useEffect to load activity if id is present
+    useEffect(() => {
+        if (id) loadActivity(id).then(activity => setActivity(activity!));
+    }, [id, loadActivity]);
+
+    // Show loading component if initial data is being loaded
+    if (loadingInitial) return <LoadingComponent content="Loading Activities ..." />
+
+    return (
         <Segment clearing>
-            <Form onSubmit={handleSubmit} autoComplete='off' onChange = {handleImputChange}>
-                <Form.Input placeholder='Title' value = {activity.title} name='title'/>
-                <Form.Input placeholder='Description' value={activity.description} name='description'/>
-                <Form.Input placeholder='Category' value={activity.category} name='category'/>
-                <Form.Input type='Date'placeholder='Date' value={activity.date} name='date'/>
-                <Form.Input placeholder='City' value={activity.city} name='city'/>
-                <Form.Input placeholder='Venue' value={activity.venue} name='venue'/>
-                <Button loading={loading} floated="right" positive type="submit" content="Submit" />
-                <Button as={Link} to={`/activities/${activity.id}`}floated="right" type="button" content='Cancel' />
-            </Form>
+            <Header content='Activity Details' sub color = 'teal' />
+            <Formik 
+                enableReinitialize
+                initialValues={activity}
+                onSubmit={handleFormSubmit}
+                validationSchema={validationSchema}
+            >
+                {({ handleSubmit, isValid, isSubmitting, dirty }) => (
+                    <Form className='ui form' onSubmit={handleSubmit} autoComplete='off'>
+                        <MyTextInput name="title" placeholder="Title" />
+                        <MyTextArea rows={3}name='description' placeholder='Description' />
+                        <MySelectInput options={categoryOptions} name='category' placeholder='Category' />
+                        <MyDateInput name='date' placeholder='Date'
+                        showTimeSelect
+                        dateFormat='MMMM d,yyyy h:mm aa' />
+                        <Header content='Location Details' sub color="teal" />
+                        <MyTextInput name='city' placeholder='City' />
+                        <MyTextInput name='venue' placeholder='Venue' />
+                        <Button 
+                        disabled={isSubmitting || !dirty || !isValid}
+                        loading={loading} floated="right" positive type="submit" content="Submit" />
+                        <Button as={Link} to={`/activities/`} floated="right" type="button" content='Cancel' />
+                    </Form>
+                )}
+            </Formik>
         </Segment>
     )
-})
+});
