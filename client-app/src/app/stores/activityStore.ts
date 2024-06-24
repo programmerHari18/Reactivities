@@ -3,6 +3,7 @@ import { Activity } from "../models/Activity";
 import agent from "../api/Agent";
 import {v4 as uuid} from 'uuid';
 import {format} from 'date-fns';
+import { store } from "./store";
 
 export default class ActivityStore {
     activityRegistry = new Map<string, Activity>();
@@ -123,6 +124,10 @@ export default class ActivityStore {
         return this.activityRegistry.get(id);
     }
     private setActivity = (activity: Activity) => {
+        const user = store.userStore.user;
+        if(user){
+            console.log(user.username);
+        }
         activity.date = new Date(activity.date!);
         this.activityRegistry.set(activity.id, activity);
     }
