@@ -72,7 +72,7 @@ namespace API.Controllers
                     DisplayName = user.DisplayName,
                     Image = null,
                     Token = TokenService.CreateToken(user),
-                    UserName = user.UserName
+                    Username = user.UserName
                 };
             }
             return BadRequest(result.Errors);
@@ -92,7 +92,7 @@ namespace API.Controllers
                 DisplayName = user.DisplayName,
                 Image = null,
                 Token = TokenService.CreateToken(user),
-                UserName = user.UserName
+                Username = user.UserName
             };
         }
     }
