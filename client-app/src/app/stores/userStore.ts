@@ -46,4 +46,9 @@ export default class UserStore{
         store.modalStore.closeModal();
         console.log(user); 
     }
+    setImage = (image: string) => {
+        if(this.user){
+         this.user.image= image;
+        }
+    }
 }
