@@ -1,9 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Application.Activities;
-using Application.Profiles;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -14,6 +9,10 @@ namespace API.Controllers
         public async Task<IActionResult> GetProfile(string username)
         {
             return HandleResult(await Mediator.Send(new Application.Profiles.Details.Query{Username = username}));
+        }
+        [HttpPut]
+        public async Task<IActionResult> EditProfile(Application.Profiles.EditProfile.Command command){
+            return HandleResult(await Mediator.Send(command));
         }
     }
 }
