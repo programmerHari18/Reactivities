@@ -1,17 +1,14 @@
-import { useState } from "react";
-import { Button, Divider, Grid, Header, Item, Reveal, Segment, Statistic } from "semantic-ui-react";
+
+import {  Divider, Grid, Header, Item, Segment, Statistic } from "semantic-ui-react";
 import { Profile } from "../../app/models/Profile";
 import { observer } from "mobx-react-lite";
+import FollowButton from "./FollowButton";
 
 interface Props{
     profile: Profile;
 }
 export default observer(function ProfileHeader({profile}: Props) {
-    const [isFollowing, setIsFollowing] = useState(false);
-
-    const handleButtonClick = () => {
-        setIsFollowing(!isFollowing);
-    };
+   
 
     return (
         <Segment>
@@ -28,24 +25,11 @@ export default observer(function ProfileHeader({profile}: Props) {
                 </Grid.Column>
                 <Grid.Column width={4}>
                     <Statistic.Group widths={2}>
-                        <Statistic label='Followers' value='5' />
-                        <Statistic label='Following' value='342' />
+                        <Statistic label='Followers' value={profile.followersCount}/>
+                        <Statistic label='Following' value={profile.followingCount} />
                     </Statistic.Group>   
                     <Divider />
-                    <Reveal animated="move">
-                        <Reveal.Content visible style ={{width: '100%'}}>
-                            <Button fluid color="teal" content='following'/>
-                        </Reveal.Content>
-                        <Reveal.Content hidden style ={{width: '100%'}}>
-                        <Button
-                                fluid
-                                basic
-                                color={isFollowing ? 'red' : 'green'}
-                                content={isFollowing ? 'Unfollow' : 'Follow'}
-                                onClick={handleButtonClick}
-                            />
-                        </Reveal.Content>
-                    </Reveal>                 
+                    <FollowButton profile={profile}/>              
                 </Grid.Column>
             </Grid>
         </Segment>
