@@ -16,12 +16,12 @@ builder.Services.AddControllers(opt => {
     var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
     opt.Filters.Add(new AuthorizeFilter(policy));
 });
-builder.Services.AddApplicationService(builder.Configuration);
-builder.Services.AddIdentityServices(builder.Configuration);
+builder.Services.AddApplicationService(builder.Configuration); //adding several services like 
+builder.Services.AddIdentityServices(builder.Configuration); // adding Identity service for User Management
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 var app = builder.Build();
 
-app.UseMiddleware<ExceptionMiddleware>();
+app.UseMiddleware<ExceptionMiddleware>(); //Managing the error, response from API
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -29,17 +29,17 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-app.UseCors("CorsPolicy");
+app.UseCors("CorsPolicy");// Access Control Allow Origin
 
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseDefaultFiles();
-app.UseStaticFiles();
+app.UseStaticFiles(); // used to load the static files like HTML, CSS files in wwwroot folder
 
 app.MapControllers();
 app.MapHub<ChatHub>("/chat");
-app.MapFallbackToController("Index","Fallback");
+app.MapFallbackToController("Index","Fallback"); //connecting the endpoints and specifying the default index page 
 
 using var scope = app.Services.CreateScope();
 
